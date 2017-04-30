@@ -1,6 +1,7 @@
 <?php
 require 'vendor/autoload.php';
 require 'src/config/db.php';
+require 'src/routes/base.php';
 
 define("STATUS_OK", 200);
 define("STATUS_CREATED", 201);
@@ -16,17 +17,19 @@ define("STATUS_NOT_IMPLEMENTED", 501);
 $app = new \Slim\Slim;
 
 // Routes
-$routesFolder = 'src/routes/';
-$files = array_diff(scandir($routesFolder), array('.', '..'));
+$dirs = array_filter(glob('src/routes/*'), 'is_dir');
 
-foreach ($files as $f)
-{
-	$ext = explode('.', $f);
-	$ext = $ext[count($ext) - 1];
+foreach ($dirs as $folder) {
+	$files = array_diff(scandir($folder), array('.', '..'));
 
-	$path = $routesFolder . $f;
+	foreach ($files as $f)
+	{
+		if ($f == 'base.php') continue;
 
-	require $path;
+		$path = $folder . '/' . $f;
+
+		require $path;
+	}
 }
 //require 'src/routes/users.php';
 

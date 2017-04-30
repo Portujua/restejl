@@ -14,7 +14,8 @@
     "slim/middleware": "*",
     "monolog/monolog": "*",
     "j4mie/paris": "*",
-    "flynsarmy/slim-monolog": "*"
+    "flynsarmy/slim-monolog": "*",
+    "apigen/apigen": "@dev"
   },
   "archive": {
     "exclude": ["vendor", ".DS_Store", "*.log"]
@@ -23,5 +24,7 @@
     "psr-0": {
       "API": "lib/"
     }
-  }
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true
 }

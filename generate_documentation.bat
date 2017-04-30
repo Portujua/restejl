@@ -1,0 +1,1 @@
+"vendor/bin/apigen" generate --tree
