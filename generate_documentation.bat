@@ -1,1 +1,1 @@
-"vendor/bin/apigen" generate --tree
+phpdoc.bat -d src -t docs --template="clean"
