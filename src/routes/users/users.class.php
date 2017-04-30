@@ -1,5 +1,16 @@
 <?php
+/**
+* It contains all User Entity methods.
+*
+* @package Classes
+* @author Eduardo Lorenzo <ejlorenzo19@gmail.com>
+* @since 30/04/2017
+* @license MIT
+*/
 
+/**
+* User class.
+*/
 class User extends BaseEntity {
 	/**
 	* User base structure
@@ -25,6 +36,11 @@ class User extends BaseEntity {
 	*/
 	static public $table = "user";
 
+	/**
+	* Class constructor
+	*
+	* @return void
+	*/
 	public function __construct() {
 		parent::__construct();
 	}
@@ -43,6 +59,7 @@ class User extends BaseEntity {
 	/**
 	* Generates the put payload array including the PK and all fields inside $data.
 	*
+	* @category Classes
 	* @param Variable $pkVal - The PK value
 	* @param Array $data - The PUT method data
 	* @return Array - Returns an array with $vals values copied into the base structure
@@ -69,7 +86,7 @@ class User extends BaseEntity {
 	/**
 	* Adds a new record
 	* 
-	* @param Array - User data structure
+	* @param Array $data - User data structure
 	* @return JSONObject - Data result or error message, both as JSON format
 	*/
 	public function add($data) {
@@ -98,7 +115,7 @@ class User extends BaseEntity {
 	/**
 	* Updates a record
 	* 
-	* @param Array - User data structure
+	* @param Array $data - User data structure
 	* @return JSONObject - Data result or error message, both as JSON format
 	*/
 	public function update($data) {
@@ -124,7 +141,7 @@ class User extends BaseEntity {
 	/**
 	* Deletes a record
 	* 
-	* @param Array - User data structure
+	* @param Array $data - User data structure
 	* @return JSONObject - Data result or error message, both as JSON format
 	*/
 	public function delete($data) {
