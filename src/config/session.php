@@ -104,7 +104,7 @@
     * @return String - The session ID
     */
     static public function generateId() {
-      return uniqid();
+      return bin2hex(openssl_random_pseudo_bytes(32));
     }
   }
 ?>
