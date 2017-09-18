@@ -53,6 +53,7 @@
 		*/
 		public function __construct() {
 			$this->connect();
+			$this->ignoreToken = false;
 		}
 
 		/**
@@ -90,7 +91,7 @@
 		* @return Array|Boolean - Returns the array containing the query result or the query status
 		*/
 		public function run($sql, $params = [], $fetchType = PDO::FETCH_OBJ) {
-			if (!Session::isActive()) {
+			if (!Session::isActive() && !$this->ignoreToken) {
 				return Response::getBaseUnauthorized();
 			}
 
@@ -133,6 +134,10 @@
 		*/
 		public function rollback() {
 			$this->db->query("rollback");
+		}
+
+		public function setIgnoreToken($value) {
+			$this->ignoreToken = $value;
 		}
 	}
 

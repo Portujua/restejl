@@ -10,16 +10,28 @@
 * @license MIT
 */
 
-$app->group('/auth', function() use ($app){
-	$app->post('/', function() use ($app) {
+$auth = new Auth();
+
+$app->group('/auth', function() use ($app, $auth){
+	$app->post('/', function() use ($app, $auth) {
     $data = json_decode($app->request->getBody(), true);
 
-    $token = Session::generateId();
-    Session::set($token);
+    $responseData = $auth->login($data);
 
-		$response = new Response(["token" => $token]);
-		$response->setSlim($app);
-		echo $response->getResponse();
+    if ($responseData instanceof Response) {
+      $responseData->setSlim($app);
+      echo $responseData->getResponse();
+    }
+    else {
+      $token = Session::generateId();
+      Session::set($token);
+
+      $responseData = json_decode(json_encode($responseData[0]), true);
+
+      $response = new Response(BaseEntity::mergeOptions($responseData, ["token" => $token], true));
+      $response->setSlim($app);
+      echo $response->getResponse();
+    }
   });
   
   $app->post('/logout', function() use ($app) {
