@@ -1,8 +1,4 @@
 <?php
-require 'vendor/autoload.php';
-require 'src/config/db.php';
-require 'src/routes/base.php';
-
 define("STATUS_OK", 200);
 define("STATUS_CREATED", 201);
 define("STATUS_BAD_REQUEST", 400);
@@ -13,6 +9,12 @@ define("STATUS_METHOD_NOT_ALLOWED", 405);
 define("STATUS_TIMEOUT", 408);
 define("STATUS_INTERNAL_SERVER_ERROR", 500);
 define("STATUS_NOT_IMPLEMENTED", 501);
+
+require 'vendor/autoload.php';
+require 'src/config/response.php';
+require 'src/config/session.php';
+require 'src/config/db.php';
+require 'src/routes/base.php';
 
 $app = new \Slim\Slim;
 
@@ -31,7 +33,6 @@ foreach ($dirs as $folder) {
 		require $path;
 	}
 }
-//require 'src/routes/users.php';
 
 $app->response()->header('Content-Type', 'application/json');
 

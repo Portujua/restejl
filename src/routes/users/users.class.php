@@ -64,9 +64,21 @@ class User extends BaseEntity {
 	* @param Array $data - The PUT method data
 	* @return Array - Returns an array with $vals values copied into the base structure
 	*/
-	static public function putPayload($pkVal, $data) {
-		$put = BaseEntity::mergeOptions([], [User::$pk => $pkVal], true);
-		return BaseEntity::mergeOptions($put, $data, true);
+	static public function putPayload($data) {
+		return BaseEntity::mergeOptions(User::$base, $data, true);
+	}
+
+	/**
+	* Generates the patch payload array including the PK and all fields inside $data.
+	*
+	* @category Classes
+	* @param Variable $pkVal - The PK value
+	* @param Array $data - The PATCH method data
+	* @return Array - Returns an array with $vals values copied into the base structure
+	*/
+	static public function patchPayload($pkVal, $data) {
+		$patch = BaseEntity::mergeOptions([], [User::$pk => $pkVal], true);
+		return BaseEntity::mergeOptions($patch, $data, true);
 	}
 
 	/**
@@ -76,10 +88,10 @@ class User extends BaseEntity {
 	*/
 	public function listAll() {
 		try {
-			return $this->parseResponse($this->getDb()->run('select * from user'));
+			return $this->getDb()->run('select * from user');
 		}
 		catch (Exception $ex) {
-			return $this->parseResponse($ex->getMessage(), true);
+			return Response::getBaseInternalError($ex->getMessage());
 		}
 	}
 
@@ -100,15 +112,15 @@ class User extends BaseEntity {
 			);
 
 			if (!$status) {
-				throw new Exception("There has been an error");
+				return Response::getBaseInternalError();
 			}
 
 			$this->getDb()->commit();
-			return $this->parseResponse("Operation completed successfully");
+			return "Operation completed successfully";
 		}
 		catch (Exception $ex) {
 			$this->getDb()->rollback();
-			return $this->parseResponse($ex->getMessage(), true);
+			return Response::getBaseInternalError($ex->getMessage());
 		}
 	}
 
@@ -126,15 +138,41 @@ class User extends BaseEntity {
 			$status = $this->getDb()->run(QueryBuilder::update(User::$table, $data, User::$pk), $data);
 
 			if (!$status) {
-				throw new Exception("There has been an error");
+				return Response::getBaseInternalError();
 			}
 
 			$this->getDb()->commit();
-			return $this->parseResponse("Operation completed successfully");
+			return "Operation completed successfully";
 		}
 		catch (Exception $ex) {
 			$this->getDb()->rollback();
-			return $this->parseResponse($ex->getMessage(), true);
+			return Response::getBaseInternalError($ex->getMessage());
+		}
+	}
+
+	/**
+	* Partially Updates a record
+	* 
+	* @param Array $data - User data structure
+	* @return JSONObject - Data result or error message, both as JSON format
+	*/
+	public function patch($data) {
+		/** We start a transaction in case something fails */
+		$this->getDb()->startTransaction();
+
+		try {
+			$status = $this->getDb()->run(QueryBuilder::update(User::$table, $data, User::$pk), $data);
+
+			if (!$status) {
+				return Response::getBaseInternalError();
+			}
+
+			$this->getDb()->commit();
+			return "Operation completed successfully";
+		}
+		catch (Exception $ex) {
+			$this->getDb()->rollback();
+			return Response::getBaseInternalError($ex->getMessage());
 		}
 	}
 
@@ -149,18 +187,18 @@ class User extends BaseEntity {
 		$this->getDb()->startTransaction();
 
 		try {
-			$status = $this->getDb()->run(QueryBuilder::delete(User::$table, $data, true), $data);
+			$status = $this->getDb()->run(QueryBuilder::deleteById(User::$table, $data, User::$pk), [User::$pk => $data[User::$pk]]);
 
 			if (!$status) {
-				throw new Exception("There has been an error");
+				return Response::getBaseInternalError();
 			}
 
 			$this->getDb()->commit();
-			return $this->parseResponse("Operation completed successfully");
+			return "Operation completed successfully";
 		}
 		catch (Exception $ex) {
 			$this->getDb()->rollback();
-			return $this->parseResponse($ex->getMessage(), true);
+			return Response::getBaseInternalError($ex->getMessage());
 		}
 	}
 }

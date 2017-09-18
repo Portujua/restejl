@@ -1,6 +1,6 @@
 <?php
 	/**
-	* It contains all User Entity methods.
+	* It contains all the Database Methods
 	*
 	* @package Configuration
 	* @author Eduardo Lorenzo <ejlorenzo19@gmail.com>
@@ -90,6 +90,10 @@
 		* @return Array|Boolean - Returns the array containing the query result or the query status
 		*/
 		public function run($sql, $params = [], $fetchType = PDO::FETCH_OBJ) {
+			if (!Session::isActive()) {
+				return Response::getBaseUnauthorized();
+			}
+
 			$q = $this->db->prepare($sql);
 
 			$run_status = $q->execute($params);
@@ -186,6 +190,29 @@
 				}
 				else {
 					$q .= " and $key like '%$val%'";
+				}
+			}
+
+			return $q;
+		}
+
+		/**
+		* Generates an delete query 
+		*
+		* Query generated is based on the $params parameter
+		* 
+		* @param String $table - The table name in the database 
+		* @param Array $params - All fields that will be updated
+		* @param Boolean $useLike - Indicates whether to use LIKE or EQUAL operator
+		*
+		* @return String - Returns the full delete query
+		*/
+		static public function deleteById($table, $params, $pk) {
+			$q = "delete from $table where 1=1";
+
+			foreach ($params as $key => $val) {
+				if ($key == $pk) {
+					$q .= " and $key=:$key";
 				}
 			}
 
