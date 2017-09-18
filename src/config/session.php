@@ -8,7 +8,7 @@
 	* @license MIT
   */
 
-  define('SESSION_TIMEOUT', 60);
+  define('SESSION_TIMEOUT', 1800);
 
   /**
 	* Session class
