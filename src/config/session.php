@@ -81,5 +81,14 @@
 
       unset($_SESSION[$token]);
     }
+
+    /**
+    * Generates a random session id
+    *
+    * @return String - The session ID
+    */
+    static public function generateId() {
+      return uniqid();
+    }
   }
 ?>
