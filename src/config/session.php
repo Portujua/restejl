@@ -32,16 +32,15 @@
     *
     * @return Boolean - Returns true if exists and it's active, otherwise returns false
     */
-    static public function isActive($name = null) {
+    static public function isActive($token = null) {
       Session::start();
 
-      if ($name == null) {
-        $name = Session::$lastToken;
+      if ($token == null) {
+        $token = Session::$lastToken;
       }
 
       // TODO: more complex validation based on time for example
-      return true;
-      return isset($_SESSION[$name]);
+      return isset($_SESSION[$token]);
     }
 
     /**
@@ -51,6 +50,36 @@
     */
     static public function setLastToken($token) {
       Session::$lastToken = $token;
+    }
+
+    /**
+    * Creates a session
+    *
+    * @return void
+    */
+    static public function set($token = null) {
+      Session::start();
+
+      if ($token == null) {
+        $token = Session::$lastToken;
+      }
+
+      $_SESSION[$token] = true;
+    }
+
+    /**
+    * Removes a session
+    *
+    * @return void
+    */
+    static public function unset($token = null) {
+      Session::start();
+
+      if ($token == null) {
+        $token = Session::$lastToken;
+      }
+
+      unset($_SESSION[$token]);
     }
   }
 ?>
