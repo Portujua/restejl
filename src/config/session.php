@@ -8,6 +8,8 @@
 	* @license MIT
   */
 
+  define('SESSION_TIMEOUT', 60);
+
   /**
 	* Session class
 	*
@@ -39,8 +41,22 @@
         $token = Session::$lastToken;
       }
 
-      // TODO: more complex validation based on time for example
-      return isset($_SESSION[$token]);
+      if (isset($_SESSION[$token])) {
+        // Refresh session time everytime a request is received
+        $timeNow = time();
+        $idleTime = $timeNow - $_SESSION[$token];
+        $_SESSION[$token] = $timeNow;
+
+        if ($idleTime > SESSION_TIMEOUT) {
+          Session::unset($token);
+          return false;
+        }
+        else {
+          return true;
+        }
+      }
+
+      return false;
     }
 
     /**
@@ -64,7 +80,7 @@
         $token = Session::$lastToken;
       }
 
-      $_SESSION[$token] = true;
+      $_SESSION[$token] = time();
     }
 
     /**
