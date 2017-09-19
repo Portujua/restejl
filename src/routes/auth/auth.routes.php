@@ -26,7 +26,7 @@ $app->group('/auth', function() use ($app, $auth){
       $token = Session::generateId();
       Session::set($token);
 
-      $responseData = json_decode(json_encode($responseData[0]), true);
+      $responseData = Util::jsonPdoToArray($responseData[0]);
 
       $response = new Response(BaseEntity::mergeOptions($responseData, ["token" => $token], true));
       $response->setSlim($app);

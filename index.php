@@ -11,6 +11,7 @@ define("STATUS_INTERNAL_SERVER_ERROR", 500);
 define("STATUS_NOT_IMPLEMENTED", 501);
 
 require 'vendor/autoload.php';
+require 'src/config/util.php';
 require 'src/config/response.php';
 require 'src/config/session.php';
 require 'src/config/db.php';
