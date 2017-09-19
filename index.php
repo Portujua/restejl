@@ -15,6 +15,7 @@ require 'src/config/response.php';
 require 'src/config/session.php';
 require 'src/config/db.php';
 require 'src/routes/base.php';
+require 'src/config/pageable.php';
 
 $app = new \Slim\Slim;
 

@@ -109,6 +109,17 @@
 			}
 		}
 
+		public function getTotalElements($table, $selector = "count(*)", $params = []) {
+			$result = json_decode(json_encode($this->run("select $selector from $table", $params)), true)[0];
+			$total = 0;
+
+			foreach ($result as $key => $val) {
+				$total += $val;
+			}
+			
+			return $total;
+		}
+
 		/**
 		* Starts a transaction on the current database connection
 		*

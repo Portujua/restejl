@@ -86,9 +86,13 @@ class User extends BaseEntity {
 	* 
 	* @return JSONObject - Data result or error message, both as JSON format
 	*/
-	public function listAll() {
+	public function listAll($pageable) {
 		try {
-			return $this->getDb()->run('select * from user');
+			$result = $this->getDb()->run('select * from user limit '.$pageable->getOffset().', '.$pageable->getSize());
+
+			$pageable->setTotalElements($this->getDb()->getTotalElements('user'));
+
+			return $pageable->getResponse($result);
 		}
 		catch (Exception $ex) {
 			return Response::getBaseInternalError($ex->getMessage());

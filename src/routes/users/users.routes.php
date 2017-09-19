@@ -18,7 +18,9 @@ $app->group('/users', function() use ($app, $user){
 
 	/** Get all users */
 	$app->get('/', function() use ($app, $user) {
-		$response = new Response($user->listAll());
+		$pageable = new Pageable($app->request->params());
+
+		$response = new Response($user->listAll($pageable));
 		$response->setSlim($app);
 		echo $response->getResponse();
 	});
