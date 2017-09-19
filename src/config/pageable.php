@@ -56,7 +56,10 @@
     }
 
     public function getResponse($response) {
-      echo is_string($this->getSimple());
+      if ($response instanceof Response) {
+        return $response;
+      }
+      
       if ($this->getSimple()) {
         return $response;
       }

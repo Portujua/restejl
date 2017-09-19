@@ -111,7 +111,14 @@
 
 		public function getTotalElements($table, $selector = "count(*)", $params = []) {
 			$result = Util::jsonPdoToArray($this->run("select $selector from $table", $params))[0];
+			$result = Util::jsonPdoToArray($this->run("select $selector from $table", $params));
 			$total = 0;
+
+			if (count($result) == 0) {
+				return 0;
+			}
+
+			$result = $result[0];
 
 			foreach ($result as $key => $val) {
 				$total += $val;
