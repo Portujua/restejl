@@ -118,6 +118,10 @@ class User extends BaseEntity {
 			if (!$status) {
 				return Response::getBaseInternalError();
 			}
+			else if ($status instanceof Response) {
+				$this->getDb()->rollback();
+				return $status;
+			}
 
 			$this->getDb()->commit();
 			return "Operation completed successfully";
@@ -143,6 +147,10 @@ class User extends BaseEntity {
 
 			if (!$status) {
 				return Response::getBaseInternalError();
+			}
+			else if ($status instanceof Response) {
+				$this->getDb()->rollback();
+				return $status;
 			}
 
 			$this->getDb()->commit();
@@ -170,6 +178,10 @@ class User extends BaseEntity {
 			if (!$status) {
 				return Response::getBaseInternalError();
 			}
+			else if ($status instanceof Response) {
+				$this->getDb()->rollback();
+				return $status;
+			}
 
 			$this->getDb()->commit();
 			return "Operation completed successfully";
@@ -195,6 +207,10 @@ class User extends BaseEntity {
 
 			if (!$status) {
 				return Response::getBaseInternalError();
+			}
+			else if ($status instanceof Response) {
+				$this->getDb()->rollback();
+				return $status;
 			}
 
 			$this->getDb()->commit();
