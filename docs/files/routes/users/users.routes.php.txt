@@ -12,25 +12,61 @@
 
 $user = new User();
 
-$app->group('/api', function() use ($app, $user){
+$app->group('/users', function() use ($app, $user){
+	$authToken = $app->request->headers->get('Auth-Token');
+	Session::setLastToken($authToken);
+
 	/** Get all users */
-	$app->get('/user', function() use ($app, $user) {
-		echo $user->listAll();
+	$app->get('/', function() use ($app, $user) {
+		$pageable = new Pageable($app->request->params());
+
+		$response = new Response($user->list($pageable));
+		$response->setSlim($app);
+		echo $response->getResponse();
 	});
 
 	/** Add new user */
-	$app->post('/user', function() use ($app, $user) {
-		echo $user->add(User::createPayload($app->request->post()));
+	$app->post('/', function() use ($app, $user) {
+		$data = json_decode($app->request->getBody(), true);
+
+		$response = new Response(
+			$user->add(User::createPayload($data))
+		);
+		$response->setSlim($app);
+		echo $response->getResponse();
 	});
 
 	/** Update user by username */
-	$app->put('/user/:id', function($id) use ($app, $user) {
-		echo $user->update(User::putPayload($id, $app->request->put()));
+	$app->put('/', function() use ($app, $user) {
+		$data = json_decode($app->request->getBody(), true);
+
+		$response = new Response(
+			$user->update(User::putPayload($data))
+		);
+		$response->setSlim($app);
+		echo $response->getResponse();
+	});
+
+	/** Update user by username */
+	$app->patch('/:id', function($id) use ($app, $user) {
+		$data = json_decode($app->request->getBody(), true);
+
+		$response = new Response(
+			$user->patch(User::patchPayload($id, $data))
+		);
+		$response->setSlim($app);
+		echo $response->getResponse();
 	});
 
 	/** Delete user by params */
-	$app->delete('/user', function() use ($app, $user) {
-		echo $user->delete($app->request->delete());
+	$app->delete('/', function() use ($app, $user) {
+		$data = json_decode($app->request->getBody(), true);
+
+		$response = new Response(
+			$user->delete($data)
+		);
+		$response->setSlim($app);
+		echo $response->getResponse();
 	});
 });
 

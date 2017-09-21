@@ -18,8 +18,13 @@ class User extends BaseEntity {
 	* @var Array
 	*/
 	static public $base = [
-		"username" => "",
-		"password" => ""
+		"id" => null,
+		"username" => null,
+		"password" => null
+	];
+
+	static public $searcheableFields = [
+		"username"
 	];
 
 	/**
@@ -34,7 +39,14 @@ class User extends BaseEntity {
 	*
 	* @var String
 	*/
-	static public $table = "user";
+	static public $tableName = "user";
+	
+	/**
+	* User table in database
+	*
+	* @var QB Table
+	*/
+	static public $table;
 
 	/**
 	* Class constructor
@@ -43,6 +55,7 @@ class User extends BaseEntity {
 	*/
 	public function __construct() {
 		parent::__construct();
+		User::$table = QB::table(User::$tableName);
 	}
 
 	/**
@@ -53,7 +66,7 @@ class User extends BaseEntity {
 	* @return Array - Returns an array with $vals values copied into the base structure
 	*/
 	static public function createPayload($vals = [], $addNew = false) {
-		return BaseEntity::mergeOptions(User::$base, $vals, $addNew);
+		return Util::mergeOptions(User::$base, $vals, $addNew);
 	}
 
 	/**
@@ -64,9 +77,21 @@ class User extends BaseEntity {
 	* @param Array $data - The PUT method data
 	* @return Array - Returns an array with $vals values copied into the base structure
 	*/
-	static public function putPayload($pkVal, $data) {
-		$put = BaseEntity::mergeOptions([], [User::$pk => $pkVal], true);
-		return BaseEntity::mergeOptions($put, $data, true);
+	static public function putPayload($data) {
+		return Util::mergeOptions(User::$base, $data, true);
+	}
+
+	/**
+	* Generates the patch payload array including the PK and all fields inside $data.
+	*
+	* @category Classes
+	* @param Variable $pkVal - The PK value
+	* @param Array $data - The PATCH method data
+	* @return Array - Returns an array with $vals values copied into the base structure
+	*/
+	static public function patchPayload($pkVal, $data) {
+		$patch = Util::mergeOptions([], [User::$pk => $pkVal], true);
+		return Util::mergeOptions($patch, $data, true);
 	}
 
 	/**
@@ -74,12 +99,36 @@ class User extends BaseEntity {
 	* 
 	* @return JSONObject - Data result or error message, both as JSON format
 	*/
-	public function listAll() {
+	public function list($pageable) {
 		try {
-			return $this->parseResponse($this->getDb()->run('select * from user'));
+			// Base query
+			$query = User::$table;
+
+			// Search for keyword if available
+			if ($pageable->hasKeyword()) {
+				foreach (User::$searcheableFields as $sf) {
+					$query->where($sf, 'like', '%'.$pageable->getKeyword().'%');
+				}
+			}
+
+			// Add the filters if available
+			foreach ($pageable->getFilters() as $filter) {
+				$query->where($filter->getField(), $filter->getOperator(), $filter->getValue());
+			}
+			
+			// Add the page
+			$query->limit($pageable->getSize())->offset($pageable->getOffset());
+
+			// Run the final query
+			$result = $this->getDb()->run($query);
+
+			// Set the total elements for the pageable
+			$pageable->setTotalElements(User::$table->count());
+
+			return $pageable->getResponse($result);
 		}
 		catch (Exception $ex) {
-			return $this->parseResponse($ex->getMessage(), true);
+			return Response::getBaseInternalError($ex->getMessage());
 		}
 	}
 
@@ -91,24 +140,12 @@ class User extends BaseEntity {
 	*/
 	public function add($data) {
 		/** We start a transaction in case something fails */
-		$this->getDb()->startTransaction();
-
 		try {
-			$status = $this->getDb()->run(
-				'insert into user (username, password) values (:username, :password)',
-				[":username" => $data['username'], ":password" => $data['password']]
-			);
-
-			if (!$status) {
-				throw new Exception("There has been an error");
-			}
-
-			$this->getDb()->commit();
-			return $this->parseResponse("Operation completed successfully");
+			$id = User::$table->insert($data);
+			return User::$table->where(User::$pk, '=', $id)->get();
 		}
 		catch (Exception $ex) {
-			$this->getDb()->rollback();
-			return $this->parseResponse($ex->getMessage(), true);
+			return Response::getBaseInternalError($ex->getMessage());
 		}
 	}
 
@@ -123,18 +160,32 @@ class User extends BaseEntity {
 		$this->getDb()->startTransaction();
 
 		try {
-			$status = $this->getDb()->run(QueryBuilder::update(User::$table, $data, User::$pk), $data);
-
-			if (!$status) {
-				throw new Exception("There has been an error");
-			}
-
-			$this->getDb()->commit();
-			return $this->parseResponse("Operation completed successfully");
+			User::$table->where(User::$pk, $data[User::$pk])->update($data);
+			return User::$table->where(User::$pk, '=', $data[User::$pk])->get();
 		}
 		catch (Exception $ex) {
 			$this->getDb()->rollback();
-			return $this->parseResponse($ex->getMessage(), true);
+			return Response::getBaseInternalError($ex->getMessage());
+		}
+	}
+
+	/**
+	* Partially Updates a record
+	* 
+	* @param Array $data - User data structure
+	* @return JSONObject - Data result or error message, both as JSON format
+	*/
+	public function patch($data) {
+		/** We start a transaction in case something fails */
+		$this->getDb()->startTransaction();
+
+		try {
+			User::$table->where(User::$pk, $data[User::$pk])->update($data);
+			return User::$table->where(User::$pk, '=', $data[User::$pk])->get();
+		}
+		catch (Exception $ex) {
+			$this->getDb()->rollback();
+			return Response::getBaseInternalError($ex->getMessage());
 		}
 	}
 
@@ -149,18 +200,12 @@ class User extends BaseEntity {
 		$this->getDb()->startTransaction();
 
 		try {
-			$status = $this->getDb()->run(QueryBuilder::delete(User::$table, $data, true), $data);
-
-			if (!$status) {
-				throw new Exception("There has been an error");
-			}
-
-			$this->getDb()->commit();
-			return $this->parseResponse("Operation completed successfully");
+			$r = User::$table->where(User::$pk, $data[User::$pk])->delete();
+			return "Operation completed successfully";
 		}
 		catch (Exception $ex) {
 			$this->getDb()->rollback();
-			return $this->parseResponse($ex->getMessage(), true);
+			return Response::getBaseInternalError($ex->getMessage());
 		}
 	}
 }
