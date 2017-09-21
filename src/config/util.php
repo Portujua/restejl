@@ -1,4 +1,20 @@
 <?php
+	/**
+	* It contains all util methods.
+	*
+	* @package Base
+	* @author Eduardo Lorenzo <ejlorenzo19@gmail.com>
+	* @since 21/09/2017
+	* @license MIT
+	*/
+
+	/**
+	* Util class
+	* 
+  * @method Array jsonToArray(String $json)
+  * @method Array jsonPdoToArray(PDOResponse $jsonPdo)
+  * @method Array mergeOptions(Array $base, Array $vals, Boolean $addIfUndefined)
+	*/
   class Util {
     public static function jsonToArray($json) {
       return json_decode($json, true);

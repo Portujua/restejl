@@ -1,4 +1,21 @@
 <?php
+  /**
+	* It contains all Filter methods.
+	*
+	* @package Base
+	* @author Eduardo Lorenzo <ejlorenzo19@gmail.com>
+	* @since 21/09/2017
+	* @license MIT
+  */
+  
+  /**
+	* Filter class
+	* 
+	* @method String getField()
+  * @method String getOperator()
+  * @method String getValue()
+  * @method Array extractFilters(String $s)
+	*/
   class Filter {
     private $field;
     private $operator;

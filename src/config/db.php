@@ -12,6 +12,13 @@
 	* Database class
 	*
 	* Contains all methods and configuration needed for the database
+	*
+	* @method Array run(Query $query)
+	* @method Int getTotalElements(Query $query)
+	* @method Void startTransaction()
+	* @method Void commit()
+	* @method Void rollback()
+	* @method Void setIgnoreToken()
 	*/
 	class Db {
 		/**
@@ -84,11 +91,9 @@
 		*
 		* Runs a query with the current database connection and return it result
 		*
-		* @param String $sql - The database query 
-		* @param Array $params - Array with values to be replaced in the query 
-		* @param Int $fetchType - PDO constant to parse the rows fetched 
+		* @param Query $sql - The database query
 		*
-		* @return Array|Boolean - Returns the array containing the query result or the query status
+		* @return Array - Returns the array containing the query result
 		*/
 		public function run($sql) {
 			if (!Session::isActive() && !$this->ignoreToken) {
@@ -98,6 +103,15 @@
 			return $sql->get();
 		}
 
+		/**
+		* Obtains the total elements
+		*
+		* Runs a query and returns the total rows of it
+		*
+		* @param Query $query - The database query
+		*
+		* @return Int - Returns the number of rows
+		*/
 		public function getTotalElements($query) {
 			$result = $query->get();
 			$total = 0;
@@ -142,6 +156,11 @@
 			$this->db->query("rollback");
 		}
 
+		/**
+		* Sets wether it should ignore the session token or not
+		*
+		* @return void
+		*/
 		public function setIgnoreToken($value) {
 			$this->ignoreToken = $value;
 		}
