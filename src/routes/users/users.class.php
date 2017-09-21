@@ -66,7 +66,7 @@ class User extends BaseEntity {
 	* @return Array - Returns an array with $vals values copied into the base structure
 	*/
 	static public function createPayload($vals = [], $addNew = false) {
-		return BaseEntity::mergeOptions(User::$base, $vals, $addNew);
+		return Util::mergeOptions(User::$base, $vals, $addNew);
 	}
 
 	/**
@@ -78,7 +78,7 @@ class User extends BaseEntity {
 	* @return Array - Returns an array with $vals values copied into the base structure
 	*/
 	static public function putPayload($data) {
-		return BaseEntity::mergeOptions(User::$base, $data, true);
+		return Util::mergeOptions(User::$base, $data, true);
 	}
 
 	/**
@@ -90,8 +90,8 @@ class User extends BaseEntity {
 	* @return Array - Returns an array with $vals values copied into the base structure
 	*/
 	static public function patchPayload($pkVal, $data) {
-		$patch = BaseEntity::mergeOptions([], [User::$pk => $pkVal], true);
-		return BaseEntity::mergeOptions($patch, $data, true);
+		$patch = Util::mergeOptions([], [User::$pk => $pkVal], true);
+		return Util::mergeOptions($patch, $data, true);
 	}
 
 	/**

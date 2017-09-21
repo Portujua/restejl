@@ -12,7 +12,7 @@
         "totalElements" => 0
       ];
 
-      $this->opts = BaseEntity::mergeOptions($defaults, $queryString);
+      $this->opts = Util::mergeOptions($defaults, $queryString);
     }
 
     public function setTotalElements($totalElements) {
