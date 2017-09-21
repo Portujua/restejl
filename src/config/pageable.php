@@ -39,8 +39,24 @@
       return $this->opts["keyword"];
     }
 
+    public function hasKeyword() {
+      return strlen($this->getKeyword()) > 0;
+    }
+
     public function getFilter() {
       return $this->opts["filter"];
+    }
+
+    public function hasFilter() {
+      return strlen($this->getFilter()) > 0;
+    }
+
+    public function getFilters() {
+      if (!$this->hasFilter()) {
+        return [];
+      }
+
+      return Filter::extractFilters($this->getFilter());
     }
 
     public function getTotalElements() {

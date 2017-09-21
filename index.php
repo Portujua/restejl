@@ -24,6 +24,7 @@ $config = array(
 new \Pixie\Connection('mysql', $config, 'QB');
 
 require 'src/config/util.php';
+require 'src/config/filter.php';
 require 'src/config/response.php';
 require 'src/config/session.php';
 require 'src/config/db.php';

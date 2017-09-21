@@ -23,6 +23,10 @@ class User extends BaseEntity {
 		"password" => null
 	];
 
+	static public $searcheableFields = [
+		"username"
+	];
+
 	/**
 	* User primary key in database
 	*
@@ -95,13 +99,30 @@ class User extends BaseEntity {
 	* 
 	* @return JSONObject - Data result or error message, both as JSON format
 	*/
-	public function listAll($pageable) {
 	public function list($pageable) {
 		try {
-			$result = $this->getDb()->run(
-				User::$table->limit($pageable->getSize())->offset($pageable->getOffset())
-			);
+			// Base query
+			$query = User::$table;
 
+			// Search for keyword if available
+			if ($pageable->hasKeyword()) {
+				foreach (User::$searcheableFields as $sf) {
+					$query->where($sf, 'like', '%'.$pageable->getKeyword().'%');
+				}
+			}
+
+			// Add the filters if available
+			foreach ($pageable->getFilters() as $filter) {
+				$query->where($filter->getField(), $filter->getOperator(), $filter->getValue());
+			}
+			
+			// Add the page
+			$query->limit($pageable->getSize())->offset($pageable->getOffset());
+
+			// Run the final query
+			$result = $this->getDb()->run($query);
+
+			// Set the total elements for the pageable
 			$pageable->setTotalElements(User::$table->count());
 
 			return $pageable->getResponse($result);
