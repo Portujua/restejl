@@ -15,7 +15,8 @@
     "monolog/monolog": "*",
     "j4mie/paris": "*",
     "flynsarmy/slim-monolog": "*",
-    "phpdocumentor/phpdocumentor": "2.*"
+    "phpdocumentor/phpdocumentor": "2.*",
+    "usmanhalalit/pixie": "2.*@dev"
   },
   "archive": {
     "exclude": ["vendor", ".DS_Store", "*.log"]

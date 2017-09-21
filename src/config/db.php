@@ -95,22 +95,24 @@
 				return Response::getBaseUnauthorized();
 			}
 
-			$q = $this->db->prepare($sql);
+			return $sql->get();
 
-			$run_status = $q->execute($params);
+			// $q = $this->db->prepare($sql);
 
-			$words = explode(' ', $sql);
+			// $run_status = $q->execute($params);
 
-			if (strtolower($words[0]) == 'select') {
-				return $q->fetchAll($fetchType);
-			}
-			else {
-				return $run_status;
-			}
+			// $words = explode(' ', $sql);
+
+			// if (strtolower($words[0]) == 'select') {
+			// 	return $q->fetchAll($fetchType);
+			// }
+			// else {
+			// 	return $run_status;
+			// }
 		}
 
-		public function getTotalElements($table, $selector = "count(*)", $params = []) {
-			$result = Util::jsonPdoToArray($this->run("select $selector from $table", $params));
+		public function getTotalElements($query) {
+			$result = $query->get();
 			$total = 0;
 
 			if (count($result) == 0) {

@@ -11,6 +11,18 @@ define("STATUS_INTERNAL_SERVER_ERROR", 500);
 define("STATUS_NOT_IMPLEMENTED", 501);
 
 require 'vendor/autoload.php';
+
+$config = array(
+	'driver'    => 'mysql',
+	'host'      => 'localhost',
+	'database'  => 'test',
+	'username'  => 'root',
+	'password'  => '21115476',
+	'charset'   => 'utf8',
+);
+
+new \Pixie\Connection('mysql', $config, 'QB');
+
 require 'src/config/util.php';
 require 'src/config/response.php';
 require 'src/config/session.php';

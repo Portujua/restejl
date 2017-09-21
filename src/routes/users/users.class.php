@@ -18,8 +18,9 @@ class User extends BaseEntity {
 	* @var Array
 	*/
 	static public $base = [
-		"username" => "",
-		"password" => ""
+		"id" => null,
+		"username" => null,
+		"password" => null
 	];
 
 	/**
@@ -34,7 +35,14 @@ class User extends BaseEntity {
 	*
 	* @var String
 	*/
-	static public $table = "user";
+	static public $tableName = "user";
+	
+	/**
+	* User table in database
+	*
+	* @var QB Table
+	*/
+	static public $table;
 
 	/**
 	* Class constructor
@@ -43,6 +51,7 @@ class User extends BaseEntity {
 	*/
 	public function __construct() {
 		parent::__construct();
+		User::$table = QB::table(User::$tableName);
 	}
 
 	/**
@@ -88,9 +97,11 @@ class User extends BaseEntity {
 	*/
 	public function listAll($pageable) {
 		try {
-			$result = $this->getDb()->run('select * from user limit '.$pageable->getOffset().', '.$pageable->getSize());
+			$result = $this->getDb()->run(
+				User::$table->limit($pageable->getSize())->offset($pageable->getOffset())
+			);
 
-			$pageable->setTotalElements($this->getDb()->getTotalElements('user'));
+			$pageable->setTotalElements(User::$table->count());
 
 			return $pageable->getResponse($result);
 		}
@@ -107,27 +118,11 @@ class User extends BaseEntity {
 	*/
 	public function add($data) {
 		/** We start a transaction in case something fails */
-		$this->getDb()->startTransaction();
-
 		try {
-			$status = $this->getDb()->run(
-				'insert into user (username, password) values (:username, :password)',
-				[":username" => $data['username'], ":password" => $data['password']]
-			);
-
-			if (!$status) {
-				return Response::getBaseInternalError();
-			}
-			else if ($status instanceof Response) {
-				$this->getDb()->rollback();
-				return $status;
-			}
-
-			$this->getDb()->commit();
-			return "Operation completed successfully";
+			$id = User::$table->insert($data);
+			return User::$table->where(User::$pk, '=', $id)->get();
 		}
 		catch (Exception $ex) {
-			$this->getDb()->rollback();
 			return Response::getBaseInternalError($ex->getMessage());
 		}
 	}
@@ -143,18 +138,8 @@ class User extends BaseEntity {
 		$this->getDb()->startTransaction();
 
 		try {
-			$status = $this->getDb()->run(QueryBuilder::update(User::$table, $data, User::$pk), $data);
-
-			if (!$status) {
-				return Response::getBaseInternalError();
-			}
-			else if ($status instanceof Response) {
-				$this->getDb()->rollback();
-				return $status;
-			}
-
-			$this->getDb()->commit();
-			return "Operation completed successfully";
+			User::$table->where(User::$pk, $data[User::$pk])->update($data);
+			return User::$table->where(User::$pk, '=', $data[User::$pk])->get();
 		}
 		catch (Exception $ex) {
 			$this->getDb()->rollback();
@@ -173,18 +158,8 @@ class User extends BaseEntity {
 		$this->getDb()->startTransaction();
 
 		try {
-			$status = $this->getDb()->run(QueryBuilder::update(User::$table, $data, User::$pk), $data);
-
-			if (!$status) {
-				return Response::getBaseInternalError();
-			}
-			else if ($status instanceof Response) {
-				$this->getDb()->rollback();
-				return $status;
-			}
-
-			$this->getDb()->commit();
-			return "Operation completed successfully";
+			User::$table->where(User::$pk, $data[User::$pk])->update($data);
+			return User::$table->where(User::$pk, '=', $data[User::$pk])->get();
 		}
 		catch (Exception $ex) {
 			$this->getDb()->rollback();
@@ -203,17 +178,7 @@ class User extends BaseEntity {
 		$this->getDb()->startTransaction();
 
 		try {
-			$status = $this->getDb()->run(QueryBuilder::deleteById(User::$table, $data, User::$pk), [User::$pk => $data[User::$pk]]);
-
-			if (!$status) {
-				return Response::getBaseInternalError();
-			}
-			else if ($status instanceof Response) {
-				$this->getDb()->rollback();
-				return $status;
-			}
-
-			$this->getDb()->commit();
+			$r = User::$table->where(User::$pk, $data[User::$pk])->delete();
 			return "Operation completed successfully";
 		}
 		catch (Exception $ex) {
