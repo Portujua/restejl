@@ -8,8 +8,17 @@
       preg_match_all('/^([A-Za-z\.\_]+)([\<\>\:\%]{1,2})(.+)/', $s, $matches);
 
       $this->field = $matches[1][0];
-      $this->operator = str_replace(':', '=', $matches[2][0]);
+      $this->operator = $matches[2][0];
       $this->value = $matches[3][0];
+
+      // Convert colon into equal
+      $this->operator = str_replace(':', '=', $this->operator);
+
+      // Convert percentage into LIKE
+      if ($this->operator == '%') {
+        $this->operator = 'like';
+        $this->value = '%'.$this->value.'%';
+      }
     }
 
     public function getField() {
