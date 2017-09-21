@@ -90,25 +90,12 @@
 		*
 		* @return Array|Boolean - Returns the array containing the query result or the query status
 		*/
-		public function run($sql, $params = [], $fetchType = PDO::FETCH_OBJ) {
+		public function run($sql) {
 			if (!Session::isActive() && !$this->ignoreToken) {
 				return Response::getBaseUnauthorized();
 			}
 
 			return $sql->get();
-
-			// $q = $this->db->prepare($sql);
-
-			// $run_status = $q->execute($params);
-
-			// $words = explode(' ', $sql);
-
-			// if (strtolower($words[0]) == 'select') {
-			// 	return $q->fetchAll($fetchType);
-			// }
-			// else {
-			// 	return $run_status;
-			// }
 		}
 
 		public function getTotalElements($query) {
@@ -159,87 +146,4 @@
 			$this->ignoreToken = $value;
 		}
 	}
-
-	/**
-	* QueryBuilder class
-	*
-	* Contains some useful functions to programmatically generate queries
-	*/
-	class QueryBuilder {
-		/**
-		* Generates an update query 
-		*
-		* Query generated is based on the $params parameter
-		* 
-		* @param String $table - The table name in the database 
-		* @param Array $params - All fields that will be updated
-		* @param String $pk - Primary key field name 
-		*
-		* @return String - Returns the full update query
-		*/
-		static public function update($table, $params, $pk) {
-			$q = "update $table set ";
-
-			foreach ($params as $key => $val) {
-				if ($key == $pk) continue;
-
-				$q .= "$key=:$key,";
-			}
-
-			/** Remove the last comma */
-			$q = substr($q, 0, -1);
-
-			$q .= " where $pk=:$pk";
-
-			return $q;
-		}
-
-		/**
-		* Generates an delete query 
-		*
-		* Query generated is based on the $params parameter
-		* 
-		* @param String $table - The table name in the database 
-		* @param Array $params - All fields that will be updated
-		* @param Boolean $useLike - Indicates whether to use LIKE or EQUAL operator
-		*
-		* @return String - Returns the full delete query
-		*/
-		static public function delete($table, $params, $useLike = false) {
-			$q = "delete from $table where 1=1";
-
-			foreach ($params as $key => $val) {
-				if (!$useLike) {
-					$q .= " and $key=:$key";
-				}
-				else {
-					$q .= " and $key like '%$val%'";
-				}
-			}
-
-			return $q;
-		}
-
-		/**
-		* Generates an delete query 
-		*
-		* Query generated is based on the $params parameter
-		* 
-		* @param String $table - The table name in the database 
-		* @param Array $params - All fields that will be updated
-		* @param Boolean $useLike - Indicates whether to use LIKE or EQUAL operator
-		*
-		* @return String - Returns the full delete query
-		*/
-		static public function deleteById($table, $params, $pk) {
-			$q = "delete from $table where 1=1";
-
-			foreach ($params as $key => $val) {
-				if ($key == $pk) {
-					$q .= " and $key=:$key";
-				}
-			}
-
-			return $q;
-		}
-	}
+?>
