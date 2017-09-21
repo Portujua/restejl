@@ -20,7 +20,7 @@ $app->group('/users', function() use ($app, $user){
 	$app->get('/', function() use ($app, $user) {
 		$pageable = new Pageable($app->request->params());
 
-		$response = new Response($user->listAll($pageable));
+		$response = new Response($user->list($pageable));
 		$response->setSlim($app);
 		echo $response->getResponse();
 	});

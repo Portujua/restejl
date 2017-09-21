@@ -96,6 +96,7 @@ class User extends BaseEntity {
 	* @return JSONObject - Data result or error message, both as JSON format
 	*/
 	public function listAll($pageable) {
+	public function list($pageable) {
 		try {
 			$result = $this->getDb()->run(
 				User::$table->limit($pageable->getSize())->offset($pageable->getOffset())
