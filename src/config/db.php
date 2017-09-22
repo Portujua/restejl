@@ -18,7 +18,6 @@
 	* @method Void startTransaction()
 	* @method Void commit()
 	* @method Void rollback()
-	* @method Void setIgnoreToken()
 	*/
 	class Db {
 		/**
@@ -60,7 +59,6 @@
 		*/
 		public function __construct() {
 			$this->connect();
-			$this->ignoreToken = false;
 		}
 
 		/**
@@ -96,7 +94,7 @@
 		* @return Array - Returns the array containing the query result
 		*/
 		public function run($sql) {
-			if (!Session::isActive() && !$this->ignoreToken) {
+			if (!Session::isActive()) {
 				return Response::getBaseUnauthorized();
 			}
 
@@ -154,15 +152,6 @@
 		*/
 		public function rollback() {
 			$this->db->query("rollback");
-		}
-
-		/**
-		* Sets wether it should ignore the session token or not
-		*
-		* @return void
-		*/
-		public function setIgnoreToken($value) {
-			$this->ignoreToken = $value;
 		}
 	}
 ?>
