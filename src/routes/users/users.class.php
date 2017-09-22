@@ -107,7 +107,7 @@ class User extends BaseEntity {
 			// Search for keyword if available
 			if ($pageable->hasKeyword()) {
 				foreach (User::$searcheableFields as $sf) {
-					$query->where($sf, 'like', '%'.$pageable->getKeyword().'%');
+					$query->orWhere($sf, 'like', '%'.$pageable->getKeyword().'%');
 				}
 			}
 
