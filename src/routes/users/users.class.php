@@ -49,13 +49,32 @@ class User extends BaseEntity {
 	static public $table;
 
 	/**
+	* Singleton instance
+	* 
+	* @var User
+	*/
+	private static $instance = null;
+
+	/**
 	* Class constructor
 	*
 	* @return void
 	*/
-	public function __construct() {
-		parent::__construct();
+	private function __construct() {
 		User::$table = QB::table(User::$tableName);
+	}
+
+	/**
+	* Singleton instance getter
+	*
+	* @return User - The User instance
+	*/
+	public static function getInstance() {
+		if (User::$instance == null) {
+			User::$instance = new User();
+		}
+
+		return User::$instance;
 	}
 
 	/**
@@ -120,7 +139,7 @@ class User extends BaseEntity {
 			$query->limit($pageable->getSize())->offset($pageable->getOffset());
 
 			// Run the final query
-			$result = $this->getDb()->run($query);
+			$result = Db::run($query);
 
 			// Set the total elements for the pageable
 			$pageable->setTotalElements(User::$table->count());
@@ -157,14 +176,14 @@ class User extends BaseEntity {
 	*/
 	public function update($data) {
 		/** We start a transaction in case something fails */
-		$this->getDb()->startTransaction();
+		Db::startTransaction();
 
 		try {
 			User::$table->where(User::$pk, $data[User::$pk])->update($data);
 			return User::$table->where(User::$pk, '=', $data[User::$pk])->get();
 		}
 		catch (Exception $ex) {
-			$this->getDb()->rollback();
+			Db::rollback();
 			return Response::getBaseInternalError($ex->getMessage());
 		}
 	}
@@ -177,14 +196,14 @@ class User extends BaseEntity {
 	*/
 	public function patch($data) {
 		/** We start a transaction in case something fails */
-		$this->getDb()->startTransaction();
+		Db::startTransaction();
 
 		try {
 			User::$table->where(User::$pk, $data[User::$pk])->update($data);
 			return User::$table->where(User::$pk, '=', $data[User::$pk])->get();
 		}
 		catch (Exception $ex) {
-			$this->getDb()->rollback();
+			Db::rollback();
 			return Response::getBaseInternalError($ex->getMessage());
 		}
 	}
@@ -197,14 +216,14 @@ class User extends BaseEntity {
 	*/
 	public function delete($data) {
 		/** We start a transaction in case something fails */
-		$this->getDb()->startTransaction();
+		Db::startTransaction();
 
 		try {
 			$r = User::$table->where(User::$pk, $data[User::$pk])->delete();
 			return "Operation completed successfully";
 		}
 		catch (Exception $ex) {
-			$this->getDb()->rollback();
+			Db::rollback();
 			return Response::getBaseInternalError($ex->getMessage());
 		}
 	}

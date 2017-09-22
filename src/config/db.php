@@ -21,70 +21,6 @@
 	*/
 	class Db {
 		/**
-		* Connection string
-		* 
-		* Contains: database name and host
-		*
-		* @var String
-		*/
-		private $dsn;
-
-		/**
-		* Database username
-		*
-		* @var String
-		*/
-		private $username;
-
-		/**
-		* Database password
-		*
-		* @var String
-		*/
-		private $password;
-
-		/**
-		* Database connection
-		*
-		* @var PDO
-		*/
-		private $db;
-
-		/**
-		* Class constructor
-		*
-		* It opens automatically a connection to the database
-		*
-		* @return void
-		*/
-		public function __construct() {
-			$this->connect();
-		}
-
-		/**
-		* Connects to the database
-		*
-		* @return void
-		*/
-		private function connect() {
-			$connect_to = (($_SERVER['HTTP_HOST'] == 'localhost') ? 'local' : 'main');
-            
-      if ($connect_to == "local") {
-        $this->username = "root";
-        $this->password = "21115476";
-        $this->dsn = "mysql:dbname=test;host=localhost;charset=UTF8;";
-      }
-      else if ($connect_to == "main") {
-      	$this->username = "salazars_eduardo";
-        $this->password = "21115476";
-        $this->dsn = "mysql:dbname=test;host=localhost;charset=UTF8;";
-      }
-
-			$this->db = new PDO($this->dsn, $this->username, $this->password);       
-      $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-		}
-
-		/**
 		* Runs a query
 		*
 		* Runs a query with the current database connection and return it result
@@ -93,7 +29,7 @@
 		*
 		* @return Array - Returns the array containing the query result
 		*/
-		public function run($sql) {
+		public static function run($sql) {
 			if (!Session::isActive()) {
 				return Response::getBaseUnauthorized();
 			}
@@ -110,7 +46,7 @@
 		*
 		* @return Int - Returns the number of rows
 		*/
-		public function getTotalElements($query) {
+		public static function getTotalElements($query) {
 			$result = $query->get();
 			$total = 0;
 

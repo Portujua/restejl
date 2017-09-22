@@ -10,60 +10,58 @@
 * @license MIT
 */
 
-$user = new User();
-
-$app->group('/users', function() use ($app, $user){
+$app->group('/users', function() use ($app){
 	$authToken = $app->request->headers->get('Auth-Token');
 	Session::setLastToken($authToken);
 
 	/** Get all users */
-	$app->get('/', function() use ($app, $user) {
+	$app->get('/', function() use ($app) {
 		$pageable = new Pageable($app->request->params());
 
-		$response = new Response($user->list($pageable));
+		$response = new Response(User::getInstance()->list($pageable));
 		$response->setSlim($app);
 		echo $response->getResponse();
 	});
 
 	/** Add new user */
-	$app->post('/', function() use ($app, $user) {
+	$app->post('/', function() use ($app) {
 		$data = json_decode($app->request->getBody(), true);
 
 		$response = new Response(
-			$user->add(User::createPayload($data))
+			User::getInstance()->add(User::createPayload($data))
 		);
 		$response->setSlim($app);
 		echo $response->getResponse();
 	});
 
 	/** Update user by username */
-	$app->put('/', function() use ($app, $user) {
+	$app->put('/', function() use ($app) {
 		$data = json_decode($app->request->getBody(), true);
 
 		$response = new Response(
-			$user->update(User::putPayload($data))
+			User::getInstance()->update(User::putPayload($data))
 		);
 		$response->setSlim($app);
 		echo $response->getResponse();
 	});
 
 	/** Update user by username */
-	$app->patch('/:id', function($id) use ($app, $user) {
+	$app->patch('/:id', function($id) use ($app) {
 		$data = json_decode($app->request->getBody(), true);
 
 		$response = new Response(
-			$user->patch(User::patchPayload($id, $data))
+			User::getInstance()->patch(User::patchPayload($id, $data))
 		);
 		$response->setSlim($app);
 		echo $response->getResponse();
 	});
 
 	/** Delete user by params */
-	$app->delete('/', function() use ($app, $user) {
+	$app->delete('/', function() use ($app) {
 		$data = json_decode($app->request->getBody(), true);
 
 		$response = new Response(
-			$user->delete($data)
+			User::getInstance()->delete($data)
 		);
 		$response->setSlim($app);
 		echo $response->getResponse();

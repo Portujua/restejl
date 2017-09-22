@@ -12,10 +12,35 @@
 * Auth class.
 */
 class Auth extends BaseEntity {
-  public function __construct() {
-    parent::__construct();
-    $this->getDb()->setIgnoreToken(true);
-  }
+	/**
+	* Singleton instance
+	* 
+	* @var User
+	*/
+	private static $instance = null;
+	
+	/**
+	* Class constructor
+	*
+	* @return void
+	*/
+	private function __construct() {
+		
+	}
+
+	/**
+	* Singleton instance getter
+	*
+	* @return Auth - The Auth instance
+	*/
+	public static function getInstance() {
+		if (Auth::$instance == null) {
+			Auth::$instance = new Auth();
+		}
+
+		return Auth::$instance;
+	}
+	
 	/**
 	* Adds a new record
 	* 
@@ -24,7 +49,7 @@ class Auth extends BaseEntity {
 	*/
 	public function login($data) {
 		try {
-			$status = $this->getDb()->run(
+			$status = Db::run(
 				'select * from user where username=:username and password=:password',
 				[":username" => $data['username'], ":password" => $data['password']]
       );
