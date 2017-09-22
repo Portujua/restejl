@@ -20,6 +20,19 @@
 	* @method Void rollback()
 	*/
 	class Db {
+		private static $config = array(
+			'driver'    => 'mysql',
+			'host'      => 'localhost',
+			'database'  => 'test',
+			'username'  => 'root',
+			'password'  => '21115476',
+			'charset'   => 'utf8',
+		);
+
+		public static function getConfiguration() {
+			return self::$config;
+		}
+
 		/**
 		* Runs a query
 		*
@@ -31,7 +44,7 @@
 		*/
 		public static function run($sql) {
 			if (!Session::isActive()) {
-				return Response::getBaseUnauthorized();
+				throw new MethodNotAllowedException();
 			}
 
 			return $sql->get();

@@ -12,7 +12,19 @@
 	* Base entity class for common methods across entities.
 	*/
 	class BaseEntity {
+		/**
+		* Base structure
+		* 
+		* @var Array
+		*/
+		static public $base = [];
 
+		/**
+		* Primary key in database
+		*
+		* @var String
+		*/
+		static public $pk = "id";
 	}
 
 ?>
