@@ -49,16 +49,18 @@ class Auth extends BaseEntity {
 	*/
 	public function login($data) {
 		try {
-			$status = Db::run(
-				'select * from user where username=:username and password=:password',
-				[":username" => $data['username'], ":password" => $data['password']]
-      );
+			$result = QB::table('user')
+					->select('id')
+					->where('username', '=', $data['username'])
+					->where('password', '=', $data['password'])
+					->get();
 
-			if (!$status) {
+			if (count($result) == 0) {
 				return Response::getBaseUnauthorized("Bad login credentials");
-      }
-      
-			return $status;
+			}
+			else {
+				return $result[0];
+			}			
 		}
 		catch (Exception $ex) {
 			return Response::getBaseInternalError($ex->getMessage());
